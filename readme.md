@@ -2,14 +2,24 @@
 
 ## Installation
  - Clone the repository `git clone https://github.com/jamesfullspeed/github-comments-webhook`
- - Create an ENV file with contents PORT and GITHUB_TOKEN
+ - Create an .env file in the root directory of the project with contents PORT and GITHUB_TOKEN
    - For GITHUB_TOKEN, create it in [Github Tokens](https://github.com/settings/tokens) and generate a classic token
  - For running locally, an Ngrok account and auth token is needed
    - Go to [Ngrok Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) page to get a token
    - Once a auth token has been generated, enter `ngrok config edit` in terminal to paste the new token
- - Run in the root directory of the cloned project `npm install`
+ - Run in the terminal in the root directory of the cloned project `npm install`
 
 ## Running the App Locally
  - First, open a terminal and locate the root directory of the project
  - Then run `node server.js`
  - Then open another terminal and run `ngrok http 3000` where port 3000 is the value specified in .env for PORT
+ - Check if the app is accessible in the browser using the Ngrok URL example `https://SOME-RANDOM-STRING.ngrok-free.dev/` where it should display the text "Webhooks for Github Only!"
+
+## Creating a Webhook on Github
+ - To be able to send comments/reviews data from a PR, go to the Repository of the project you want this webhook app to be attached
+  - Go to the Settings -> Webhooks of that repository, example: `https://github.com/XXX/YYY/settings/hooks` where `XXX` is the Github user (your username) while `YYY` is the repository name
+  - Click the "Add Webhook" button and in the Payload URL, enter the Ngrok URL provided `https://SOME-RANDOM-STRING.ngrok-free.dev/github-comments-webhook` if using locally or provide the URL if deployed somewhere else
+  - For content-type, select "application/json"
+  - For triggers, select individual events and then check "Issue comments" and "Pull request review comments"
+  - Then click save at the bottom to activate the webhook
+  - To test, add a test comment on a pull request of the repository where the webhook was created and you should see in the "Recent Deliveries" of that webhook the results (should be 200)

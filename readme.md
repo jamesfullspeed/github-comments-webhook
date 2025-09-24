@@ -26,6 +26,6 @@
 
 ## Events, Properties, and Methods Defined in server.js
  - Under the endpoint `/github-comments-webhook`, there are only two events taken into consideration
- - Event `issue_comment` is an event where a user comments on a pull request in the "Conversation" tab
- - Event `pull_request_review_comment` is an event where a user comments on a pull request in the "Files changed" tab
+   - Event `issue_comment` is an event where a user comments on a pull request in the "Conversation" tab
+   - Event `pull_request_review_comment` is an event where a user comments on a pull request in the "Files changed" tab
  - A helper function `getThreadParticipants` is implemented to get all the users involved if the comment if it is already a thread (comment that has more than 1 participant)

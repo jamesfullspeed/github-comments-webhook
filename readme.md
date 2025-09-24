@@ -23,3 +23,9 @@
   - For triggers, select individual events and then check "Issue comments" and "Pull request review comments"
   - Then click save at the bottom to activate the webhook
   - To test, add a test comment on a pull request of the repository where the webhook was created and you should see in the "Recent Deliveries" of that webhook the results (should be 200)
+
+## Events, Properties, and Methods Defined in server.js
+ - Under the endpoint `/github-comments-webhook`, there are only two events taken into consideration
+ - Event `issue_comment` is an event where a user comments on a pull request in the "Conversation" tab
+ - Event `pull_request_review_comment` is an event where a user comments on a pull request in the "Files changed" tab
+ - A helper function `getThreadParticipants` is implemented to get all the users involved if the comment if it is already a thread (comment that has more than 1 participant)

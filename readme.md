@@ -21,11 +21,15 @@
   - Click the "Add Webhook" button and in the Payload URL, enter the Ngrok URL provided `https://SOME-RANDOM-STRING.ngrok-free.dev/github-comments-webhook` if using locally or provide the URL if deployed somewhere else
   - For content-type, select "application/json"
   - For triggers, select individual events and then check "Issue comments" and "Pull request review comments"
-  - Then click save at the bottom to activate the webhook
+  - Then click "Add webhook" button at the bottom to activate the webhook
   - To test, add a test comment on a pull request of the repository where the webhook was created and you should see in the "Recent Deliveries" of that webhook the results (should be 200)
 
 ## Events, Properties, and Methods Defined in server.js
  - Under the endpoint `/github-comments-webhook`, there are only two events taken into consideration
    - Event `issue_comment` is an event where a user comments on a pull request in the "Conversation" tab
    - Event `pull_request_review_comment` is an event where a user comments on a pull request in the "Files changed" tab
- - A helper function `getThreadParticipants` is implemented to get all the users involved if the comment if it is already a thread (comment that has more than 1 participant)
+ - A helper function `getThreadParticipants` is implemented to get all the users involved if the comment is already a thread (comment that has more than 1 participant)
+
+## Sending Data to Slack
+ - Same [document can be followed to add scripts](https://docs.google.com/document/d/1GPw_LqtUUgLY49YQMEA7TtkWmdtfkvtxK3uDbY-j1YU/edit?tab=t.0#heading=h.jfnl7lpq69if) to process the data and then send to slack
+ - The slack usernames will be the same but it should be matched now with Github usernames instead of Bitbucket

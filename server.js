@@ -17,11 +17,11 @@ app.get("/", (req, res) => {
 app.post("/github-comments-webhook", async (req, res) => {
   const event = req.headers["x-github-event"]; // e.g. "issue_comment" or "pull_request_review_comment"
   const payload = req.body;
-  console.log(payload);
 
   console.log(`🔔 Received GitHub event: ${event}`);
 
   if (event === "issue_comment") {
+    console.log(payload);
     const commentAuthor = payload.comment?.user?.login;
     const prAuthor = payload.issue?.user?.login;
     const commentBody = payload.comment?.body;
@@ -31,6 +31,7 @@ app.post("/github-comments-webhook", async (req, res) => {
   }
 
   if (event === "pull_request_review_comment") {
+    console.log(payload);
     const comment = payload.comment;
     const commentAuthor = comment?.user?.login;
     const prAuthor = payload.pull_request?.user?.login;

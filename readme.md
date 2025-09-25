@@ -33,3 +33,6 @@
 ## Sending Data to Slack
  - Same [document can be followed to add scripts](https://docs.google.com/document/d/1GPw_LqtUUgLY49YQMEA7TtkWmdtfkvtxK3uDbY-j1YU/edit?tab=t.0#heading=h.jfnl7lpq69if) to process the data and then send to slack
  - The slack usernames will be the same but it should be matched now with Github usernames instead of Bitbucket
+
+## Sample JSON Files
+ - The sample JSON files in this repository are example of data sent by Github to the NodeJS webhook app

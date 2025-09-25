@@ -1,10 +1,10 @@
-require("dotenv").config();
-const { Octokit } = require("@octokit/rest");
+import 'dotenv/config.js';            // Loads environment variables
+import { Octokit } from '@octokit/rest';
 
 // Authenticated GitHub client
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
-async function getThreadParticipants(owner, repo, pullNumber, inReplyToId) {
+export async function getThreadParticipants(owner, repo, pullNumber, inReplyToId) {
   // 1. Get the root comment (the one being replied to)
   const { data: rootComment } = await octokit.pulls.getReviewComment({
     owner,
@@ -32,10 +32,5 @@ async function getThreadParticipants(owner, repo, pullNumber, inReplyToId) {
   ];
 
   // 5. Deduplicate
-  const uniqueUsers = [...new Set(allUsers)];
-
-  return uniqueUsers;
+  return [...new Set(allUsers)];
 }
-
-// 👇 Export it
-module.exports = { getThreadParticipants };

@@ -2,11 +2,12 @@
 
 ## Installation
  - Clone the repository `git clone https://github.com/jamesfullspeed/github-comments-webhook`
- - Create an .env file in the root directory of the project with contents PORT and GITHUB_TOKEN
+ - Create an .env file in the root directory of the project with contents PORT, GITHUB_TOKEN, and SLACK_USER_OAUTH_TOKEN
    - For GITHUB_TOKEN, create it in [Github Tokens](https://github.com/settings/tokens) and generate a classic token
  - For running locally, an Ngrok account and auth token is needed
    - Go to [Ngrok Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken) page to get a token
    - Once a auth token has been generated, enter `ngrok config edit` in terminal to paste the new token
+ - Slack token can be obtained [in here](https://api.slack.com/apps/A03S4BNU0V8/oauth)
  - Run in the terminal in the root directory of the cloned project `npm install`
 
 ## Running the App Locally

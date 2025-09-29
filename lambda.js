@@ -117,7 +117,8 @@ export const handler = async function (event, context, callback) {
 
     // Append to Google Sheets
     // Attempt to create the ticket link
-    const jiraTicketCodeMatch = payload.issue.title.match(/\[([A-Z]{2}-\d+)\]/);
+    const tempTitle = payload?.issue?.title || payload?.pull_request?.title || '';
+    const jiraTicketCodeMatch = tempTitle?.match(/\[([A-Z]{2}-\d+)\]/) || '';
     const jiraTicketCode = jiraTicketCodeMatch ? jiraTicketCodeMatch[1] : '';
     let jiraUrl = '';
     if (jiraTicketCode.length > 0) {
@@ -128,7 +129,7 @@ export const handler = async function (event, context, callback) {
         Date: new Date().toISOString().split('T')[0],
         Flags: '',
         Ticket: jiraUrl,
-        'Pull Request': payload.issue.html_url ? payload.issue.html_url : '',
+        'Pull Request': payload?.issue?.html_url ? payload.issue.html_url : payload.pull_request.html_url,
         Author: prAuthor,
         Comment: `${prCommentLink}\n${commentBody}`,
         Points: 0,

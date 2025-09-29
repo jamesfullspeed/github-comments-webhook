@@ -6,14 +6,6 @@ const credentials = JSON.parse(
   fs.readFileSync(new URL("./github-slack-google-sheet-key.json", import.meta.url), "utf8")
 );
 
-// Create Google Sheets client
-const auth = new google.auth.GoogleAuth({
-  credentials,
-  scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-});
-
-const sheets = google.sheets({ version: "v4", auth });
-
 // --- CONFIGURE YOUR SHEET ---
 const spreadsheetId = "1QgX1MSIeDT_z-XSDlJb-IvDrYzVwqZQ9vNlQsCnDAh8"; // from the URL
 const range = "Sheet1!A:H"; // Adjust columns and sheet name as needed
@@ -40,6 +32,13 @@ export async function appendRow(data) {
   const values = [
     columnOrder.map(key => data[key] ?? "") // preserve column order
   ];
+
+    // Create Google Sheets client
+    const auth = new google.auth.GoogleAuth({
+        credentials,
+        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
+    const sheets = google.sheets({ version: "v4", auth });
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,

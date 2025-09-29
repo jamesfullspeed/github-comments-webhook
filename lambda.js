@@ -2,8 +2,46 @@ import 'dotenv/config.js';
 import { getThreadParticipants } from './github-helpers.mjs';
 import { sendMessageToSlack } from './slack.mjs';
 import { findSlackMemberIdByGithubUsername } from './users.mjs';
+import { Netmask } from 'netmask';
+import { appendRow } from "./sheets.mjs";
+
+// List in https://api.github.com/meta at the hooks property
+const githubIps = [
+    "192.30.252.0/22",
+    "185.199.108.0/22",
+    "140.82.112.0/20",
+    "143.55.64.0/20",
+    "2a0a:a440::/29",
+    "2606:50c0::/32"
+];
+
+// Check if IP address is in the list of provided IPs or CIDR blocks
+function checkIp(ip, list) {
+  return list.some(entry => {
+    if (entry.includes('/')) {
+      const block = new Netmask(entry);
+      return block.contains(ip);
+    }
+    return ip === entry;
+  });
+}
 
 export const handler = async function (event, context, callback) {
+
+    // Check if source IP is in allowed GitHub IPs
+    const sourceIp = event.requestContext?.http?.sourceIp;
+    console.log("Source IP:", sourceIp);
+    const isAllowed = checkIp(sourceIp, githubIps);
+    if (!isAllowed) {
+        // ❌ Return isAuthorized false for unauthorized IPs
+        return {
+            isAuthorized: false,
+            context: {
+                reason: "IP not allowed"
+            }
+        };
+    }
+
     console.log('🔔 Incoming request:', event.rawPath, event.requestContext?.http?.method);
 
     const headers = event.headers || {};
@@ -76,6 +114,26 @@ export const handler = async function (event, context, callback) {
         console.log(`➡️ Sending Slack message to ${participant}: "${message}"`);
         await sendMessageToSlack(sendToMember, message);
     }
+
+    // Append to Google Sheets
+    // Attempt to create the ticket link
+    const jiraTicketCodeMatch = payload.issue.title.match(/\[([A-Z]{2}-\d+)\]/);
+    const jiraTicketCode = jiraTicketCodeMatch ? jiraTicketCodeMatch[1] : '';
+    let jiraUrl = '';
+    if (jiraTicketCode.length > 0) {
+        jiraUrl = `https://for-it.atlassian.net/browse/${jiraTicketCode}`;
+    }
+    // Call appendRow function in sheets.mjs
+    await appendRow({
+        Date: new Date().toISOString().split('T')[0],
+        Flags: '',
+        Ticket: jiraUrl,
+        'Pull Request': payload.issue.html_url ? payload.issue.html_url : '',
+        Author: prAuthor,
+        Comment: `${prCommentLink}\n${commentBody}`,
+        Points: 0,
+        Commenter: commentAuthor
+    })
 
     return { statusCode: 200, body: 'Webhook processed successfully' };
 };

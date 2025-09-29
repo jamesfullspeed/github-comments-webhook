@@ -3,6 +3,7 @@ import express from 'express';
 import { getThreadParticipants } from './github-helpers.mjs';
 import { sendMessageToSlack } from './slack.mjs';
 import { findSlackMemberIdByGithubUsername } from './users.mjs';
+import { appendRow } from "./sheets.mjs";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,7 +36,7 @@ app.post('/github-comments-webhook', async (req, res) => {
       .send(noActionMessage);
   }
 
-  //console.log(payload)
+  console.log(payload)
   const comment = payload.comment;
   const commentAuthor = comment?.user?.login;
   const commentBody = comment?.body;
@@ -70,7 +71,8 @@ app.post('/github-comments-webhook', async (req, res) => {
   // Remove duplicates
   participants = [...new Set(participants)];
   // Remove Copilot and the comment author because we do not want to notify them in Slack
-  const participantsToRemove = ['Copilot', commentAuthor]
+  //const participantsToRemove = ['Copilot', commentAuthor]
+    const participantsToRemove = ['Copilot']
   participants = participants.filter(item => !participantsToRemove.includes(item))
   console.log('👥 Thread participants:', participants);
 
@@ -84,6 +86,26 @@ app.post('/github-comments-webhook', async (req, res) => {
     console.log(`➡️ Sending Slack message to ${participant}: "${message}"`);
     await sendMessageToSlack(sendToMember, message)
   });
+
+  // Append to Google Sheets
+  // Attempt to create the ticket link
+  const jiraTicketCodeMatch = payload.issue.title.match(/\[([A-Z]{2}-\d+)\]/);
+  const jiraTicketCode = jiraTicketCodeMatch ? jiraTicketCodeMatch[1] : '';
+  let jiraUrl = '';
+  if (jiraTicketCode.length > 0) {
+    jiraUrl = `https://for-it.atlassian.net/browse/${jiraTicketCode}`;
+  }
+  // Call appendRow function in sheets.mjs
+  await appendRow({
+    Date: new Date().toISOString().split('T')[0],
+    Flags: '',
+    Ticket: jiraUrl,
+    'Pull Request': payload.issue.html_url ? payload.issue.html_url : '',
+    Author: prAuthor,
+    Comment: `${prCommentLink}\n${commentBody}`,
+    Points: 0,
+    Commenter: commentAuthor
+  })
 
   // Respond to GitHub
   res.status(200).send('Webhook received');
